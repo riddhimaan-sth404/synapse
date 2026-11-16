@@ -1,0 +1,127 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ============================================================
+       Antigravity-inspired design tokens
+       Warm neutral surfaces, low-contrast strokes, iridescent accents
+       ============================================================ -->
+
+  <ResourceDictionary.ThemeDictionaries>
+
+    <!-- LIGHT (brand surface) -->
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="SurfaceWindow" Color="#F4F2EF" />
+      <SolidColorBrush x:Key="SurfaceCard" Color="#FCFBF9" />
+      <SolidColorBrush x:Key="SurfaceRaised" Color="#FCFBF9" />
+      <SolidColorBrush x:Key="SurfaceSidebar" Color="#EEECE8" />
+      <SolidColorBrush x:Key="SurfaceInset" Color="#E8E5E0" />
+      <SolidColorBrush x:Key="SurfaceInsetStrong" Color="#DEDAD4" />
+      <SolidColorBrush x:Key="SurfaceHover" Color="#E5E1DB" />
+
+      <SolidColorBrush x:Key="Stroke" Color="#E4E0DA" />
+      <SolidColorBrush x:Key="StrokeStrong" Color="#D3CEC6" />
+
+      <SolidColorBrush x:Key="TextPrimary" Color="#1B1A19" />
+      <SolidColorBrush x:Key="TextSecondary" Color="#6D6963" />
+      <SolidColorBrush x:Key="TextTertiary" Color="#9B968E" />
+      <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFF" />
+
+      <SolidColorBrush x:Key="Accent" Color="#1A73E8" />
+      <SolidColorBrush x:Key="AccentHover" Color="#1765CC" />
+      <SolidColorBrush x:Key="AccentSoft" Color="#E8F0FE" />
+
+      <SolidColorBrush x:Key="Success" Color="#1E8E3E" />
+      <SolidColorBrush x:Key="SuccessSoft" Color="#E6F4EA" />
+      <SolidColorBrush x:Key="Warning" Color="#B06000" />
+      <SolidColorBrush x:Key="WarningSoft" Color="#FEF7E0" />
+      <SolidColorBrush x:Key="Error" Color="#D93025" />
+      <SolidColorBrush x:Key="ErrorSoft" Color="#FCE8E6" />
+
+      <SolidColorBrush x:Key="AuroraVeil" Color="#66F4F2EF" />
+      <SolidColorBrush x:Key="ShadowSoft" Color="#1A2B2013" />
+    </ResourceDictionary>
+
+    <!-- DARK -->
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="SurfaceWindow" Color="#141413" />
+      <SolidColorBrush x:Key="SurfaceCard" Color="#1D1D1C" />
+      <SolidColorBrush x:Key="SurfaceRaised" Color="#262625" />
+      <SolidColorBrush x:Key="SurfaceSidebar" Color="#101010" />
+      <SolidColorBrush x:Key="SurfaceInset" Color="#262625" />
+      <SolidColorBrush x:Key="SurfaceInsetStrong" Color="#30302E" />
+      <SolidColorBrush x:Key="SurfaceHover" Color="#2A2A28" />
+
+      <SolidColorBrush x:Key="Stroke" Color="#2B2B29" />
+      <SolidColorBrush x:Key="StrokeStrong" Color="#3C3C39" />
+
+      <SolidColorBrush x:Key="TextPrimary" Color="#F4F3F1" />
+      <SolidColorBrush x:Key="TextSecondary" Color="#A8A49E" />
+      <SolidColorBrush x:Key="TextTertiary" Color="#77746E" />
+      <SolidColorBrush x:Key="TextOnAccent" Color="#0B0F14" />
+
+      <SolidColorBrush x:Key="Accent" Color="#7EB0FF" />
+      <SolidColorBrush x:Key="AccentHover" Color="#A6C8FF" />
+      <SolidColorBrush x:Key="AccentSoft" Color="#1C2B45" />
+
+      <SolidColorBrush x:Key="Success" Color="#7BD88F" />
+      <SolidColorBrush x:Key="SuccessSoft" Color="#16301F" />
+      <SolidColorBrush x:Key="Warning" Color="#F2B75C" />
+      <SolidColorBrush x:Key="WarningSoft" Color="#33280F" />
+      <SolidColorBrush x:Key="Error" Color="#FF9086" />
+      <SolidColorBrush x:Key="ErrorSoft" Color="#3A1A17" />
+
+      <SolidColorBrush x:Key="AuroraVeil" Color="#55141413" />
+      <SolidColorBrush x:Key="ShadowSoft" Color="#33000000" />
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+
+  <!-- ============================================================
+       Signature gradients (theme independent)
+       ============================================================ -->
+
+  <!-- Iridescent composer rim: blue -> rose -> amber -> mint -> violet -->
+  <LinearGradientBrush x:Key="ComposerGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0.00" Color="#8AB4F8" />
+    <GradientStop Offset="0.26" Color="#F2A6C6" />
+    <GradientStop Offset="0.52" Color="#F7CB7B" />
+    <GradientStop Offset="0.76" Color="#9BD9AE" />
+    <GradientStop Offset="1.00" Color="#B79CF5" />
+  </LinearGradientBrush>
+
+  <!-- Brand mark / primary accent sweep -->
+  <LinearGradientBrush x:Key="BrandGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0.00" Color="#1A73E8" />
+    <GradientStop Offset="0.55" Color="#6C8CF5" />
+    <GradientStop Offset="1.00" Color="#C58AF9" />
+  </LinearGradientBrush>
+
+  <!-- Aurora blooms: soft radial falloff, transparent at the edge -->
+  <RadialGradientBrush x:Key="AuroraBlue" Center="50%,50%" GradientOrigin="50%,50%" RadiusX="50%" RadiusY="50%">
+    <GradientStop Offset="0" Color="#5C8AB4F8" />
+    <GradientStop Offset="1" Color="#008AB4F8" />
+  </RadialGradientBrush>
+
+  <RadialGradientBrush x:Key="AuroraRose" Center="50%,50%" GradientOrigin="50%,50%" RadiusX="50%" RadiusY="50%">
+    <GradientStop Offset="0" Color="#4DF2A6C6" />
+    <GradientStop Offset="1" Color="#00F2A6C6" />
+  </RadialGradientBrush>
+
+  <RadialGradientBrush x:Key="AuroraAmber" Center="50%,50%" GradientOrigin="50%,50%" RadiusX="50%" RadiusY="50%">
+    <GradientStop Offset="0" Color="#40F7CB7B" />
+    <GradientStop Offset="1" Color="#00F7CB7B" />
+  </RadialGradientBrush>
+
+  <RadialGradientBrush x:Key="AuroraMint" Center="50%,50%" GradientOrigin="50%,50%" RadiusX="50%" RadiusY="50%">
+    <GradientStop Offset="0" Color="#389BD9AE" />
+    <GradientStop Offset="1" Color="#009BD9AE" />
+  </RadialGradientBrush>
+
+  <!-- ============================================================
+       Type families
+       ============================================================ -->
+
+  <FontFamily x:Key="FontSans">Inter, Segoe UI Variable Text, Segoe UI, sans-serif</FontFamily>
+  <FontFamily x:Key="FontMono">Cascadia Mono, Consolas, SF Mono, monospace</FontFamily>
+
+</ResourceDictionary>

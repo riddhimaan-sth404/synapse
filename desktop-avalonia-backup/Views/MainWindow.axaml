@@ -1,0 +1,496 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Synapse.Desktop.ViewModels"
+        xmlns:views="clr-namespace:Synapse.Desktop.Views"
+        x:Class="Synapse.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Synapse"
+        Width="1360" Height="880"
+        MinWidth="1040" MinHeight="680"
+        Background="{DynamicResource SurfaceWindow}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        TransparencyLevelHint="None">
+
+  <Grid RowDefinitions="35,*">
+
+    <!-- ============================================================
+         Top Title Bar (VS Code / Antigravity style)
+         Full window width, flush caption buttons, centered breadcrumb
+         ============================================================ -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceSidebar}"
+            BorderBrush="{DynamicResource Stroke}"
+            BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,*,Auto"
+            Background="Transparent"
+            PointerPressed="OnDragRegionPressed">
+
+        <!-- Left: Logo & Menus -->
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="4"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center">
+          <Border Width="20" Height="20" CornerRadius="6" Background="{DynamicResource BrandGradient}" Margin="0,0,6,0">
+            <TextBlock Text="S"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Foreground="#FFFFFF"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+          </Border>
+          <Button Classes="menu-item" Content="Synapse" />
+          <Button Classes="menu-item" Content="Workspace" />
+          <Button Classes="menu-item" Content="View" />
+          <Button Classes="menu-item" Content="Window" />
+        </StackPanel>
+
+        <!-- Center: Breadcrumb Pill -->
+        <Border Grid.Column="1"
+                Background="{DynamicResource SurfaceInset}"
+                BorderBrush="{DynamicResource Stroke}"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="14,3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="synapse"
+                       FontSize="11.5"
+                       Foreground="{DynamicResource TextTertiary}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="/"
+                       FontSize="11.5"
+                       Foreground="{DynamicResource TextTertiary}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{Binding ActiveSectionTitle}"
+                       FontSize="11.5"
+                       Foreground="{DynamicResource TextPrimary}"
+                       FontWeight="Medium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Right: Status Badge, IDE Button, Inspector Toggle & Caption Controls -->
+        <StackPanel Grid.Column="2"
+                    Orientation="Horizontal"
+                    Spacing="0"
+                    VerticalAlignment="Stretch">
+          <Border Classes="chip" Margin="0,0,10,0" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Ellipse Classes="dot ok" />
+              <TextBlock Text="127.0.0.1:3001"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondary}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <Button Classes="ghost"
+                  Command="{Binding OpenIdeCommand}"
+                  ToolTip.Tip="Open in IDE (VS Code)"
+                  Height="26"
+                  Padding="8,2"
+                  CornerRadius="6"
+                  Margin="0,0,4,0"
+                  VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="5">
+              <Path Classes="icon small" Data="{StaticResource IconCode}" Width="12" Height="12" />
+              <TextBlock Text="Open IDE" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+
+          <Button Classes="titlebar"
+                  Command="{Binding ToggleInspectorCommand}"
+                  ToolTip.Tip="Toggle Inspector Dock"
+                  Width="36"
+                  Margin="0,0,6,0">
+            <Path Classes="icon small" Data="{StaticResource IconDock}" Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Button>
+
+          <Button Classes="titlebar" Click="OnMinimizeClick" ToolTip.Tip="Minimize">
+            <Path Classes="icon small" Data="{StaticResource IconMinimize}" Width="11" Height="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Button>
+          <Button Classes="titlebar" Click="OnMaximizeClick" ToolTip.Tip="Maximize">
+            <Path Classes="icon small" Data="{StaticResource IconMaximize}" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Button>
+          <Button Classes="titlebar close" Click="OnCloseClick" ToolTip.Tip="Close">
+            <Path Classes="icon small" Data="{StaticResource IconClose}" Width="11" Height="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Button>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ============================================================
+         Workspace Area: Sidebar (Col 0) + Surface (Col 1) + Inspector (Col 2)
+         ============================================================ -->
+    <Grid Grid.Row="1" ColumnDefinitions="248,*,Auto">
+
+      <!-- ============================================================
+           Sidebar (Col 0)
+           ============================================================ -->
+      <Border Grid.Column="0" Background="{DynamicResource SurfaceSidebar}">
+        <Grid RowDefinitions="Auto,*,Auto" Margin="10,12,10,12">
+
+          <!-- Primary action -->
+          <Button Grid.Row="0"
+                  Classes="secondary"
+                  Command="{Binding NewConversationCommand}"
+                  Margin="0,0,0,16"
+                  Padding="11,8"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left">
+            <Grid ColumnDefinitions="Auto,*">
+              <Path Classes="icon strong" Data="{StaticResource IconPlus}" Width="15" Height="15" />
+              <TextBlock Grid.Column="1"
+                         Text="New conversation"
+                         Margin="8,0,0,0"
+                         FontSize="12.5"
+                         Foreground="{DynamicResource TextPrimary}"
+                         VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+
+          <!-- Navigation -->
+          <StackPanel Grid.Row="1" Spacing="2">
+
+            <TextBlock Classes="caption" Text="WORKSPACE" Margin="9,0,0,9" />
+
+            <Button Classes="nav"
+                    Classes.active="{Binding IsAgentActive}"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="agent"
+                    Margin="0,0,0,2">
+              <Grid ColumnDefinitions="20,*">
+                <Path Classes="icon" Data="{StaticResource IconSpark}" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="AI Assistant" Margin="10,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+
+            <Button Classes="nav"
+                    Classes.active="{Binding IsOrchestralActive}"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="orchestral"
+                    Margin="0,0,0,2">
+              <Grid ColumnDefinitions="20,*">
+                <Path Classes="icon" Data="{StaticResource IconAgents}" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="Workflows and Citadel" Margin="10,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+
+            <Button Classes="nav"
+                    Classes.active="{Binding IsIntegrationsActive}"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="integrations"
+                    Margin="0,0,0,2">
+              <Grid ColumnDefinitions="20,*">
+                <Path Classes="icon" Data="{StaticResource IconGrid}" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="Connected apps" Margin="10,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+
+            <Button Classes="nav"
+                    Classes.active="{Binding IsLocalAiActive}"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="local-ai"
+                    Margin="0,0,0,2">
+              <Grid ColumnDefinitions="20,*">
+                <Path Classes="icon" Data="{StaticResource IconBolt}" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="Local AI" Margin="10,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+
+          </StackPanel>
+
+          <!-- Footer -->
+          <StackPanel Grid.Row="2" Spacing="6">
+            <Border Classes="hairline" Margin="2,0,2,6" />
+
+            <Button Classes="nav"
+                    Classes.active="{Binding IsSettingsActive}"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="settings">
+              <Grid ColumnDefinitions="20,*">
+                <Path Classes="icon" Data="{StaticResource IconSliders}" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="Settings" Margin="10,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+            </Button>
+
+            <Border Classes="badge" HorizontalAlignment="Left" Margin="9,2,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Classes="dot ok" />
+                <TextBlock Text="Local engine ready"
+                           FontSize="10.5"
+                           Foreground="{DynamicResource TextSecondary}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+        </Grid>
+      </Border>
+
+      <!-- ============================================================
+           Workspace Surface (Col 1)
+           ============================================================ -->
+      <Grid Grid.Column="1" ClipToBounds="True">
+
+        <Canvas IsHitTestVisible="False">
+          <Ellipse Width="640" Height="460"
+                   Canvas.Left="-120" Canvas.Top="-260"
+                   Fill="{StaticResource AuroraBlue}" />
+          <Ellipse Width="480" Height="380"
+                   Canvas.Left="220" Canvas.Top="-260"
+                   Fill="{StaticResource AuroraRose}" />
+          <Ellipse Width="420" Height="340"
+                   Canvas.Left="440" Canvas.Top="-200"
+                   Fill="{StaticResource AuroraAmber}" />
+          <Ellipse Width="380" Height="300"
+                   Canvas.Left="560" Canvas.Top="120"
+                   Fill="{StaticResource AuroraMint}" />
+        </Canvas>
+
+        <Border Background="{DynamicResource SurfaceWindow}" Opacity="0.55" />
+
+        <ContentControl Content="{Binding CurrentView}">
+          <ContentControl.DataTemplates>
+            <DataTemplate DataType="vm:AgentViewModel">
+              <views:AgentView />
+            </DataTemplate>
+            <DataTemplate DataType="vm:IntegrationsViewModel">
+              <views:IntegrationsView />
+            </DataTemplate>
+            <DataTemplate DataType="vm:LocalAiViewModel">
+              <views:LocalAiView />
+            </DataTemplate>
+            <DataTemplate DataType="vm:SettingsViewModel">
+              <views:SettingsView />
+            </DataTemplate>
+            <DataTemplate DataType="vm:OrchestralViewModel">
+              <views:OrchestralView />
+            </DataTemplate>
+          </ContentControl.DataTemplates>
+        </ContentControl>
+
+      </Grid>
+
+      <!-- ============================================================
+           Right Inspector Dock (Col 2 - Antigravity Signature)
+           Overview, Subagents, Background Tasks, Artifacts
+           ============================================================ -->
+      <Border Grid.Column="2"
+              Width="268"
+              MinWidth="0"
+              Background="{DynamicResource SurfaceSidebar}"
+              BorderBrush="{DynamicResource Stroke}"
+              BorderThickness="1,0,0,0"
+              IsVisible="{Binding IsInspectorOpen}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="16,14,16,16" Spacing="16">
+
+            <!-- Section: Overview -->
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="caption" Text="OVERVIEW" />
+                <Border Grid.Column="1" Classes="badge ok" Padding="6,2">
+                  <TextBlock Text="+2412 -446" FontSize="10" Foreground="{DynamicResource Success}" />
+                </Border>
+              </Grid>
+
+              <StackPanel Spacing="4">
+                <Button Classes="ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5">
+                  <Grid ColumnDefinitions="18,*">
+                    <Path Classes="icon" Data="{StaticResource IconCode}" Width="13" Height="13" />
+                    <TextBlock Grid.Column="1" Text="Review changes" FontSize="11.5" Margin="8,0,0,0" />
+                  </Grid>
+                </Button>
+
+                <Button Classes="ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5">
+                  <Grid ColumnDefinitions="18,*">
+                    <Path Classes="icon" Data="{StaticResource IconFile}" Width="13" Height="13" />
+                    <TextBlock Grid.Column="1" Text="Files (workspace confined)" FontSize="11.5" Margin="8,0,0,0" />
+                  </Grid>
+                </Button>
+
+                <Button Classes="ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5">
+                  <Grid ColumnDefinitions="18,*">
+                    <Path Classes="icon" Data="{StaticResource IconTerminal}" Width="13" Height="13" />
+                    <TextBlock Grid.Column="1" Text="Terminal (:3001 loopback)" FontSize="11.5" Margin="8,0,0,0" />
+                  </Grid>
+                </Button>
+
+                <Button Classes="ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5">
+                  <Grid ColumnDefinitions="18,*">
+                    <Path Classes="icon" Data="{StaticResource IconShield}" Width="13" Height="13" />
+                    <TextBlock Grid.Column="1" Text="Citadel policy (active)" FontSize="11.5" Margin="8,0,0,0" />
+                  </Grid>
+                </Button>
+              </StackPanel>
+            </StackPanel>
+
+            <Border Classes="hairline" />
+
+            <!-- Section: Subagents -->
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="caption" Text="SUBAGENTS" />
+                <TextBlock Grid.Column="1" Text="{Binding SubagentsCount}" FontSize="10.5" Foreground="{DynamicResource TextTertiary}" />
+              </Grid>
+
+              <StackPanel Spacing="6">
+                <!-- Browser Worker -->
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SurfaceRaised}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" VerticalAlignment="Center">
+                      <Path Classes="icon small" Data="{StaticResource IconBrowser}" Width="12" Height="12" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                      <TextBlock Text="Browser Worker" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Stagehand Go / Playwright" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                    <Ellipse Grid.Column="2" Classes="dot ok" />
+                  </Grid>
+                </Border>
+
+                <!-- Coding Specialist -->
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SurfaceRaised}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" VerticalAlignment="Center">
+                      <Path Classes="icon small" Data="{StaticResource IconAgents}" Width="12" Height="12" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                      <TextBlock Text="Coding Specialist" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="JCode Harness - 4 Roles" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                    <Ellipse Grid.Column="2" Classes="dot ok" />
+                  </Grid>
+                </Border>
+
+                <!-- Document Parser -->
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SurfaceRaised}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" VerticalAlignment="Center">
+                      <Path Classes="icon small" Data="{StaticResource IconFile}" Width="12" Height="12" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                      <TextBlock Text="Document Parser" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Docling Python Worker" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                    <Ellipse Grid.Column="2" Classes="dot ok" />
+                  </Grid>
+                </Border>
+              </StackPanel>
+            </StackPanel>
+
+            <Border Classes="hairline" />
+
+            <!-- Section: Background Tasks -->
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="caption" Text="BACKGROUND TASKS" />
+                <TextBlock Grid.Column="1" Text="{Binding BackgroundTasksCount}" FontSize="10.5" Foreground="{DynamicResource TextTertiary}" />
+              </Grid>
+
+              <StackPanel Spacing="6">
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Ellipse Classes="dot ok" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Text="Synapse Core Backend" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Port 3001 - loopback isolated" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Ellipse Classes="dot ok" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Text="LangGraph Multi-Agent" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="State checkpointing and HITL" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Ellipse Classes="dot ok" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Text="Bifrost Model Gateway" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Local llama.cpp + Cloud cascade" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Ellipse Classes="dot ok" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Text="Citadel Security Engine" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Append-only cryptographic audit" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </StackPanel>
+            </StackPanel>
+
+            <Border Classes="hairline" />
+
+            <!-- Section: Artifacts -->
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="caption" Text="ARTIFACTS" />
+                <TextBlock Grid.Column="1" Text="{Binding ArtifactsCount}" FontSize="10.5" Foreground="{DynamicResource TextTertiary}" />
+              </Grid>
+
+              <StackPanel Spacing="6">
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SurfaceRaised}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" VerticalAlignment="Center">
+                      <Path Classes="icon small" Data="{StaticResource IconFile}" Width="12" Height="12" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" Spacing="2">
+                      <TextBlock Text="Synapse Implementation Plan" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Canonical Architecture v1.0" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SurfaceRaised}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" VerticalAlignment="Center">
+                      <Path Classes="icon small" Data="{StaticResource IconFile}" Width="12" Height="12" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" Spacing="2">
+                      <TextBlock Text="Protobuf Contracts (v1)" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="common, agent, tools, audit" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+
+                <Border Classes="inset" Padding="10,8">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SurfaceRaised}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" VerticalAlignment="Center">
+                      <Path Classes="icon small" Data="{StaticResource IconFile}" Width="12" Height="12" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" Spacing="2">
+                      <TextBlock Text="Threat Model &amp; Policies" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                      <TextBlock Text="Loopback confinement and DPAPI" FontSize="10" Foreground="{DynamicResource TextTertiary}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </StackPanel>
+            </StackPanel>
+
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+    </Grid>
+
+  </Grid>
+
+</Window>

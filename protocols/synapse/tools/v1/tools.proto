@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package synapse.tools.v1;
+
+option csharp_namespace = "Synapse.Protocols.Tools.V1";
+option go_package = "github.com/riddhimaan-sth404/synapse/protocols/gen/go/tools/v1;toolsv1";
+
+import "synapse/common/v1/common.proto";
+
+enum ToolCategory {
+  TOOL_CATEGORY_UNSPECIFIED = 0;
+  TOOL_CATEGORY_READONLY_WORKSPACE = 1;
+  TOOL_CATEGORY_MCP = 2;
+  TOOL_CATEGORY_BROWSER = 3;
+  TOOL_CATEGORY_DOCUMENT = 4;
+}
+
+message ToolDefinition {
+  string name = 1;
+  string description = 2;
+  ToolCategory category = 3;
+  string input_schema_json = 4;
+  bool requires_approval = 5;
+}
+
+message ToolInvocationRequest {
+  string session_id = 1;
+  string tool_name = 2;
+  string arguments_json = 3;
+  string requested_by = 4;
+}
+
+message ToolInvocationResponse {
+  string session_id = 1;
+  string tool_name = 2;
+  bool success = 3;
+  string output_json = 4;
+  string error_message = 5;
+  bool redacted = 6;
+}

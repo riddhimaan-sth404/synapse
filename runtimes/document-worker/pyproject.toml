@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synapse-document-worker"
+version = "1.0.0"
+description = "Synapse Docling Document Processing Worker"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.30.0",
+    "pydantic>=2.7.0"
+]

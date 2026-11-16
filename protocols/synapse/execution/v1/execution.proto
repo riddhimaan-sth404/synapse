@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package synapse.execution.v1;
+
+option csharp_namespace = "Synapse.Protocols.Execution.V1";
+option go_package = "github.com/riddhimaan-sth404/synapse/protocols/gen/go/execution/v1;executionv1";
+
+import "synapse/common/v1/common.proto";
+
+enum ExecutionEventKind {
+  EXECUTION_EVENT_KIND_UNSPECIFIED = 0;
+  EXECUTION_EVENT_KIND_TEXT_DELTA = 1;
+  EXECUTION_EVENT_KIND_TOOL_REQUEST = 2;
+  EXECUTION_EVENT_KIND_TOOL_RESULT = 3;
+  EXECUTION_EVENT_KIND_APPROVAL_REQUEST = 4;
+  EXECUTION_EVENT_KIND_APPROVAL_DECISION = 5;
+  EXECUTION_EVENT_KIND_COMPLETED = 6;
+  EXECUTION_EVENT_KIND_FAILED = 7;
+}
+
+message ExecutionEvent {
+  uint64 sequence = 1;
+  string session_id = 2;
+  ExecutionEventKind kind = 3;
+  string payload = 4;
+  string timestamp = 5;
+}
+
+message ExecutionCheckpoint {
+  string checkpoint_id = 1;
+  string session_id = 2;
+  uint64 step = 3;
+  bytes state_snapshot = 4;
+  string created_at = 5;
+}

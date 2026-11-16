@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "policy_name": "synapse_canonical_default_policy",
+  "rules": [
+    {
+      "resource": "workspace_read",
+      "action": "execute",
+      "effect": "allow",
+      "constraints": {
+        "max_file_size_bytes": 65536,
+        "enforce_confinement": true,
+        "enforce_redaction": true
+      }
+    },
+    {
+      "resource": "workspace_list",
+      "action": "execute",
+      "effect": "allow",
+      "constraints": {
+        "max_entries": 200,
+        "hide_sensitive_paths": true
+      }
+    },
+    {
+      "resource": "workspace_search",
+      "action": "execute",
+      "effect": "allow",
+      "constraints": {
+        "max_matches": 200,
+        "max_query_len": 256,
+        "enforce_redaction": true
+      }
+    },
+    {
+      "resource": "mcp_tool",
+      "action": "execute",
+      "effect": "conditional",
+      "condition": "requires_approval_if_mutating"
+    },
+    {
+      "resource": "browser_navigation",
+      "action": "execute",
+      "effect": "conditional",
+      "constraints": {
+        "disallow_internal_subnets": true,
+        "disallow_payment_flows": true
+      }
+    },
+    {
+      "resource": "shell_command",
+      "action": "execute",
+      "effect": "deny"
+    }
+  ]
+}

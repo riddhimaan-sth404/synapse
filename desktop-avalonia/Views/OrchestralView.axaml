@@ -1,0 +1,410 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Synapse.Desktop.ViewModels"
+             xmlns:m="clr-namespace:Synapse.Desktop.Models"
+             xmlns:conv="using:Avalonia.Data.Converters"
+             x:Class="Synapse.Desktop.Views.OrchestralView"
+             x:DataType="vm:OrchestralViewModel">
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="30,8,30,28" MaxWidth="1000" Spacing="18">
+
+      <!-- ============================================================
+           Header
+           ============================================================ -->
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="5">
+          <TextBlock Classes="h1" Text="Workflows &amp; Citadel" />
+          <TextBlock Classes="sub"
+                     Text="Multi-agent graphs, specialist coding sessions, HITL approvals, and audit ledger." />
+        </StackPanel>
+
+        <Button Grid.Column="1"
+                Classes="secondary"
+                Command="{Binding RefreshCommand}"
+                VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <Path Classes="icon small" Data="{StaticResource IconRefresh}" Width="13" Height="13" />
+            <TextBlock Text="Refresh"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextPrimary}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </Grid>
+
+      <!-- ============================================================
+           Runtime status
+           ============================================================ -->
+      <Border Classes="card" Padding="20">
+        <StackPanel Spacing="13">
+
+          <StackPanel Orientation="Horizontal" Spacing="9">
+            <Path Classes="icon" Data="{StaticResource IconAgents}" Width="15" Height="15" />
+            <TextBlock Classes="h2" Text="Runtime" />
+          </StackPanel>
+
+          <TextBlock Text="{Binding RuntimeStatusMessage}"
+                     Classes="sub"
+                     TextWrapping="Wrap" />
+
+          <StackPanel Orientation="Horizontal" Spacing="8">
+
+            <Border Classes="badge ok" IsVisible="{Binding CoreHealthy}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Classes="dot ok" />
+                <TextBlock Text="Citadel healthy"
+                           FontSize="10.5"
+                           Foreground="{DynamicResource Success}" />
+              </StackPanel>
+            </Border>
+            <Border Classes="badge bad" IsVisible="{Binding !CoreHealthy}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Classes="dot bad" />
+                <TextBlock Text="Citadel unavailable"
+                           FontSize="10.5"
+                           Foreground="{DynamicResource Error}" />
+              </StackPanel>
+            </Border>
+
+            <Border Classes="badge ok" IsVisible="{Binding WorkerHealthy}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Classes="dot ok" />
+                <TextBlock Text="Local worker healthy"
+                           FontSize="10.5"
+                           Foreground="{DynamicResource Success}" />
+              </StackPanel>
+            </Border>
+            <Border Classes="badge" IsVisible="{Binding !WorkerHealthy}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Classes="dot" />
+                <TextBlock Text="Local worker idle"
+                           FontSize="10.5"
+                           Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ============================================================
+           Passive local analysis
+           ============================================================ -->
+      <Border Classes="card" Padding="20">
+        <StackPanel Spacing="13">
+
+          <StackPanel Spacing="4">
+            <TextBlock Classes="h2" Text="Passive local analysis" />
+            <TextBlock Classes="sub"
+                       Text="Scans source and config files for possible hard-coded secrets. Only masked evidence is stored. The worker is confined to the Synapse workspace root and never runs network or shell commands."
+                       TextWrapping="Wrap" />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBox Grid.Column="0"
+                     Text="{Binding Workspace}"
+                     Watermark="Relative workspace path, e.g. backend-rust"
+                     Margin="0,0,10,0" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+              <Button Classes="primary"
+                      Command="{Binding StartLocalAnalysisCommand}"
+                      IsEnabled="{Binding !IsBusy}"
+                      Content="Run scan" />
+              <Button Classes="secondary"
+                      Command="{Binding CancelLocalAnalysisCommand}"
+                      IsVisible="{Binding IsBusy}"
+                      Content="Cancel" />
+            </StackPanel>
+          </Grid>
+
+          <TextBlock Text="{Binding JobStatusMessage}"
+                     Classes="mono"
+                     TextWrapping="Wrap" />
+
+        </StackPanel>
+      </Border>
+
+      <!-- ============================================================
+           JCode agent runtime
+           ============================================================ -->
+      <Border Classes="card" Padding="20">
+        <StackPanel Spacing="14">
+
+          <StackPanel Spacing="4">
+            <TextBlock Classes="h2" Text="JCode agent runtime" />
+            <TextBlock Text="{Binding JcodeStatusMessage}"
+                       Classes="sub"
+                       TextWrapping="Wrap" />
+          </StackPanel>
+
+          <Border Classes="inset" Padding="14">
+            <StackPanel Spacing="11">
+              <TextBlock Classes="caption" Text="PROVIDER CREDENTIALS" />
+              <TextBlock Classes="sub"
+                         Text="Keys are sent only to the loopback backend and persisted by JCode in its owner-only store. They never reach the audit log."
+                         TextWrapping="Wrap" />
+
+              <Grid ColumnDefinitions="180,*">
+                <ComboBox ItemsSource="{Binding JcodeProviders}"
+                          SelectedItem="{Binding JcodeProvider}"
+                          Margin="0,0,10,0" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding JcodeApiKey}"
+                         PasswordChar="*"
+                         Watermark="Provider API key" />
+              </Grid>
+
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Classes="primary"
+                        Command="{Binding ConfigureJcodeProviderCommand}"
+                        Content="Save key" />
+                <Button Classes="secondary"
+                        Command="{Binding ClearJcodeProviderCommand}"
+                        Content="Clear key" />
+              </StackPanel>
+
+              <TextBlock Text="{Binding JcodeProviderMessage}"
+                         Classes="mono"
+                         TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <StackPanel Spacing="4">
+            <TextBlock Classes="h2" Text="Agent session" />
+            <TextBlock Classes="sub"
+                       Text="Agents receive only confined, read-only workspace tools. Shell, write, network and MCP tools stay disabled."
+                       TextWrapping="Wrap" />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBox Text="{Binding JcodeWorkspace}"
+                     Watermark="Workspace path relative to Synapse root"
+                     Margin="0,0,10,0" />
+            <Button Grid.Column="1"
+                    Classes="secondary"
+                    Command="{Binding CreateJcodeSessionCommand}"
+                    IsEnabled="{Binding JcodeProviderReady}"
+                    Content="Create session" />
+          </Grid>
+
+          <Grid ColumnDefinitions="180,*">
+            <ComboBox ItemsSource="{Binding JcodeRoles}"
+                      SelectedItem="{Binding JcodeRole}"
+                      Margin="0,0,10,0" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding JcodeObjective}"
+                     Watermark="Agent objective" />
+          </Grid>
+
+          <ComboBox ItemsSource="{Binding JcodeSessions}"
+                    SelectedItem="{Binding JcodeSessionId}" />
+
+          <TextBox Text="{Binding JcodePrompt}"
+                   AcceptsReturn="True"
+                   MinHeight="76"
+                   TextWrapping="Wrap"
+                   Watermark="Task for the selected agent session" />
+
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="primary"
+                    Command="{Binding RunJcodeSessionCommand}"
+                    IsEnabled="{Binding JcodeProviderReady}"
+                    Content="Run task" />
+            <Button Classes="secondary"
+                    Command="{Binding CancelJcodeSessionCommand}"
+                    Content="Cancel session" />
+          </StackPanel>
+
+          <Border Classes="hairline" />
+
+          <TextBlock Classes="caption" Text="CONCURRENT BATCH - UP TO 8 AGENTS" />
+          <TextBlock Classes="sub"
+                     Text="One task per line. Every line becomes an isolated agent using the selected role above."
+                     TextWrapping="Wrap" />
+
+          <TextBox Text="{Binding JcodeBatchTasks}"
+                   AcceptsReturn="True"
+                   MinHeight="92"
+                   TextWrapping="Wrap"
+                   Watermark="Task 1&#10;Task 2&#10;Task 3" />
+
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="primary"
+                    Command="{Binding RunJcodeBatchCommand}"
+                    IsEnabled="{Binding JcodeProviderReady}"
+                    Content="Run batch" />
+            <Button Classes="secondary"
+                    Command="{Binding CancelJcodeBatchCommand}"
+                    Content="Cancel batch" />
+          </StackPanel>
+
+          <Border Classes="inset" Padding="14" IsVisible="{Binding JcodeResult, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock Text="{Binding JcodeResult}"
+                       FontSize="12"
+                       LineHeight="18"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextPrimary}" />
+          </Border>
+
+        </StackPanel>
+      </Border>
+
+      <!-- ============================================================
+           Pending approvals
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Pending approvals" />
+
+        <ItemsControl ItemsSource="{Binding PendingApprovals}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="m:OrchestralApproval">
+              <Border Classes="card" Padding="16" Margin="0,0,0,10">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding ToolName}"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <Border Grid.Column="1" Classes="badge">
+                      <TextBlock Text="{Binding RiskTier, StringFormat='Risk - {0}'}"
+                                 FontSize="10.5"
+                                 Foreground="{DynamicResource TextTertiary}" />
+                    </Border>
+                  </Grid>
+                  <TextBlock Text="{Binding Target}" Classes="mono" TextWrapping="Wrap" />
+                  <Border Classes="inset" Padding="11">
+                    <TextBlock Text="{Binding CommandPreview}"
+                               Classes="mono"
+                               TextWrapping="Wrap" />
+                  </Border>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Classes="primary" Content="Approve" Command="{Binding ApproveCommand}" />
+                    <Button Classes="secondary" Content="Deny" Command="{Binding DenyCommand}" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <!-- ============================================================
+           Agents
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Agents" />
+
+        <ItemsControl ItemsSource="{Binding Agents}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="m:OrchestralAgent">
+              <Border Classes="card" Padding="14" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Border Width="30" Height="30"
+                          CornerRadius="9"
+                          Background="{DynamicResource SurfaceInset}"
+                          VerticalAlignment="Top">
+                    <Path Classes="icon" Data="{StaticResource IconAgents}" Width="15" Height="15" />
+                  </Border>
+
+                  <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="2">
+                    <TextBlock Text="{Binding Name}"
+                               FontSize="12.5"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="{Binding Role}"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextTertiary}" />
+                    <TextBlock Text="{Binding Status}"
+                               FontSize="11.5"
+                               Foreground="{DynamicResource TextSecondary}" />
+                    <TextBlock Text="{Binding CurrentTask}"
+                               FontSize="11.5"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextTertiary}" />
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <!-- ============================================================
+           Findings
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Findings" />
+
+        <ItemsControl ItemsSource="{Binding Findings}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="m:OrchestralFinding">
+              <Border Classes="card" Padding="16" Margin="0,0,0,8">
+                <StackPanel Spacing="6">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Title}"
+                               FontSize="12.5"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               TextWrapping="Wrap" />
+                    <Border Grid.Column="1" Classes="badge" Margin="8,0,0,0">
+                      <TextBlock Text="{Binding Severity}"
+                                 FontSize="10.5"
+                                 Foreground="{DynamicResource TextSecondary}" />
+                    </Border>
+                  </Grid>
+                  <TextBlock Text="{Binding Target}" Classes="mono" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding Description}"
+                             FontSize="11.5"
+                             TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextSecondary}" />
+                  <Border Classes="inset" Padding="11">
+                    <TextBlock Text="{Binding Evidence}"
+                               Classes="mono"
+                               TextWrapping="Wrap" />
+                  </Border>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <!-- ============================================================
+           Audit trail
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Recent audit events" />
+
+        <ItemsControl ItemsSource="{Binding AuditEntries}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="m:OrchestralAuditEntry">
+              <Border Classes="inset" Padding="12" Margin="0,0,0,6">
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Action}"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <TextBlock Text="{Binding Details}"
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextTertiary}" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="1"
+                             Classes="mono"
+                             Text="{Binding Timestamp, StringFormat='{}{0:MMM d, HH:mm}'}"
+                             Margin="12,0,0,0"
+                             VerticalAlignment="Top" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

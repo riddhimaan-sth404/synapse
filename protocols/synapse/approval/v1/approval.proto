@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package synapse.approval.v1;
+
+option csharp_namespace = "Synapse.Protocols.Approval.V1";
+option go_package = "github.com/riddhimaan-sth404/synapse/protocols/gen/go/approval/v1;approvalv1";
+
+import "synapse/common/v1/common.proto";
+
+enum ApprovalDecision {
+  APPROVAL_DECISION_UNSPECIFIED = 0;
+  APPROVAL_DECISION_APPROVED = 1;
+  APPROVAL_DECISION_DENIED = 2;
+  APPROVAL_DECISION_TIMED_OUT = 3;
+}
+
+message ApprovalRequest {
+  string approval_id = 1;
+  string session_id = 2;
+  string action_type = 3;
+  string details_json = 4;
+  string requested_at = 5;
+  int64 expires_at_seconds = 6;
+}
+
+message ApprovalResolution {
+  string approval_id = 1;
+  ApprovalDecision decision = 2;
+  string decided_by = 3;
+  string reason = 4;
+  string resolved_at = 5;
+}

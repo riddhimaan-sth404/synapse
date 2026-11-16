@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Synapse.Desktop.ViewModels"
+             x:Class="Synapse.Desktop.Views.LocalAiView"
+             x:DataType="vm:LocalAiViewModel">
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="30,8,30,28" MaxWidth="880" Spacing="20">
+
+      <!-- ============================================================
+           Header
+           ============================================================ -->
+      <StackPanel Spacing="5">
+        <TextBlock Classes="h1" Text="Local AI" />
+        <TextBlock Classes="sub"
+                   Text="Download open-weight models and run them natively on your hardware through llama-server." />
+      </StackPanel>
+
+      <!-- ============================================================
+           Model selection
+           ============================================================ -->
+      <Border Classes="card" Padding="22">
+        <StackPanel Spacing="18">
+
+          <Grid ColumnDefinitions="Auto,*">
+            <Border Width="38" Height="38" CornerRadius="12" Background="{DynamicResource AccentSoft}" VerticalAlignment="Center">
+              <Path Classes="icon accent" Data="{StaticResource IconBolt}" Width="18" Height="18" />
+            </Border>
+            <StackPanel Grid.Column="1" Margin="13,0,0,0" VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Offline inference"
+                         FontSize="14"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimary}" />
+              <TextBlock Text="No network calls. Models stay on this device."
+                         FontSize="11.5"
+                         Foreground="{DynamicResource TextTertiary}" />
+            </StackPanel>
+          </Grid>
+
+          <Border Classes="hairline" />
+
+          <StackPanel Spacing="7">
+            <TextBlock Classes="caption" Text="MODEL" />
+            <Grid ColumnDefinitions="*,Auto">
+              <ComboBox Grid.Column="0"
+                        ItemsSource="{Binding AvailableModels}"
+                        SelectedItem="{Binding SelectedModel}"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,0,10,0">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Name}" FontSize="12.5" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Grid.Column="1"
+                      Classes="primary"
+                      Command="{Binding DownloadModelCommand}"
+                      Content="{Binding DownloadButtonText}"
+                      IsEnabled="{Binding !IsDownloading}" />
+            </Grid>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <ProgressBar Value="{Binding DownloadProgressValue}"
+                         Minimum="0"
+                         Maximum="100"
+                         Height="6"
+                         IsVisible="{Binding IsDownloading}" />
+            <TextBlock Text="{Binding DownloadStatusText}"
+                       Classes="mono"
+                       TextWrapping="Wrap" />
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+
+      <!-- ============================================================
+           Selected model details
+           ============================================================ -->
+      <Border Classes="card" Padding="22">
+        <StackPanel Spacing="14">
+
+          <TextBlock Classes="h2" Text="Model details" />
+
+          <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Text="Name" FontSize="11.5" Margin="0,0,0,10" Foreground="{DynamicResource TextTertiary}" />
+            <TextBlock Grid.Row="0" Grid.Column="1"
+                       Text="{Binding SelectedModel.Name}"
+                       FontSize="12"
+                       Margin="0,0,0,10"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextPrimary}" />
+
+            <TextBlock Grid.Row="1" Text="Repository" FontSize="11.5" Margin="0,0,0,10" Foreground="{DynamicResource TextTertiary}" />
+            <TextBlock Grid.Row="1" Grid.Column="1"
+                       Text="{Binding SelectedModel.Repo}"
+                       Classes="mono"
+                       Margin="0,0,0,10"
+                       TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="2" Text="File" FontSize="11.5" Foreground="{DynamicResource TextTertiary}" />
+            <TextBlock Grid.Row="2" Grid.Column="1"
+                       Text="{Binding SelectedModel.FileName}"
+                       Classes="mono"
+                       TextWrapping="Wrap" />
+          </Grid>
+
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package synapse.agent.v1;
+
+option csharp_namespace = "Synapse.Protocols.Agent.V1";
+option go_package = "github.com/riddhimaan-sth404/synapse/protocols/gen/go/agent/v1;agentv1";
+
+import "synapse/common/v1/common.proto";
+
+enum AgentRole {
+  AGENT_ROLE_UNSPECIFIED = 0;
+  AGENT_ROLE_WORKSPACE_ANALYST = 1;
+  AGENT_ROLE_SECURITY_REVIEWER = 2;
+  AGENT_ROLE_DEPENDENCY_REVIEWER = 3;
+  AGENT_ROLE_DOCUMENTATION_REVIEWER = 4;
+  AGENT_ROLE_GENERAL_COORDINATOR = 5;
+}
+
+enum AgentStatus {
+  AGENT_STATUS_UNSPECIFIED = 0;
+  AGENT_STATUS_IDLE = 1;
+  AGENT_STATUS_RUNNING = 2;
+  AGENT_STATUS_WAITING_APPROVAL = 3;
+  AGENT_STATUS_COMPLETED = 4;
+  AGENT_STATUS_FAILED = 5;
+  AGENT_STATUS_CANCELLED = 6;
+}
+
+message AgentDefinition {
+  string agent_id = 1;
+  string name = 2;
+  AgentRole role = 3;
+  AgentStatus status = 4;
+  string current_task = 5;
+  int64 tokens_used = 6;
+  double cost_usd = 7;
+  string created_at = 8;
+  string last_seen = 9;
+}
+
+message CreateAgentRequest {
+  string workspace = 1;
+  AgentRole role = 2;
+  string objective = 3;
+}
+
+message CreateAgentResponse {
+  string agent_id = 1;
+  string session_id = 2;
+  AgentRole role = 3;
+  AgentStatus status = 4;
+  repeated string tools_enabled = 5;
+}

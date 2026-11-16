@@ -1,0 +1,313 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Synapse.Desktop.ViewModels"
+             xmlns:m="clr-namespace:Synapse.Desktop.Models"
+             xmlns:conv="using:Synapse.Desktop.Converters"
+             x:Class="Synapse.Desktop.Views.AgentView"
+             x:DataType="vm:AgentViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto,Auto"
+        Margin="30,8,30,24"
+        MaxWidth="1060">
+
+    <!-- ============================================================
+         Header
+         ============================================================ -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="2,0,2,14">
+      <StackPanel Spacing="5">
+        <TextBlock Classes="h1" Text="AI Assistant" />
+        <TextBlock Classes="sub"
+                   Text="Local-first inference with cloud fallback, subagents, and connected apps." />
+      </StackPanel>
+
+      <Border Grid.Column="1" Classes="badge ok" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="7">
+          <Ellipse Classes="dot ok" />
+          <TextBlock Text="Local ready"
+                     FontSize="11"
+                     Foreground="{DynamicResource Success}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- ============================================================
+         Conversation surface
+         ============================================================ -->
+    <Border Grid.Row="1" Classes="card" CornerRadius="20" ClipToBounds="True">
+      <Grid RowDefinitions="Auto,*">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="18,11,10,11">
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Path Classes="icon" Data="{StaticResource IconSpark}" Width="14" Height="14" />
+            <TextBlock Text="Conversation"
+                       FontSize="12"
+                       FontWeight="Medium"
+                       Foreground="{DynamicResource TextSecondary}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <Button Grid.Column="1"
+                  Classes="ghost"
+                  Command="{Binding ClearLogsCommand}"
+                  Height="26"
+                  Padding="8,2"
+                  ToolTip.Tip="Clear conversation">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon small" Data="{StaticResource IconTrash}" Width="13" Height="13" />
+              <TextBlock Text="Clear"
+                         FontSize="11.5"
+                         Foreground="{DynamicResource TextSecondary}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </Grid>
+
+        <Border Grid.Row="0" Classes="hairline" VerticalAlignment="Bottom" />
+
+        <ScrollViewer Grid.Row="1" Padding="20,16,16,8" VerticalScrollBarVisibility="Auto">
+          <ItemsControl ItemsSource="{Binding Logs}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="m:LogEntry">
+                <Grid ColumnDefinitions="14,46,*" Margin="0,0,0,10">
+                  <Ellipse Classes="dot"
+                           Classes.ok="{Binding IsSuccess}"
+                           Classes.bad="{Binding IsError}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
+                           Margin="0,6,0,0" />
+                  <TextBlock Grid.Column="1"
+                             Classes="mono"
+                             Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
+                             VerticalAlignment="Top"
+                             Opacity="0.75" />
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding Text}"
+                             FontSize="12.5"
+                             LineHeight="19"
+                             Foreground="{DynamicResource TextPrimary}"
+                             TextWrapping="Wrap"
+                             VerticalAlignment="Top" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+      </Grid>
+    </Border>
+
+    <!-- ============================================================
+         Quick Action Chips (Antigravity Signature)
+         ============================================================ -->
+    <WrapPanel Grid.Row="2" Margin="4,12,4,4" Orientation="Horizontal">
+      <TextBlock Text="Quick Actions:" FontSize="11" Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" Margin="0,0,8,0" />
+
+      <Button Classes="chip" Command="{Binding InsertTagCommand}" CommandParameter="@browser" ToolTip.Tip="Dispatch a browser automation subagent (Stagehand Go / Playwright)" Margin="0,0,6,4">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Path Classes="icon small accent" Data="{StaticResource IconBrowser}" Width="11" Height="11" />
+          <TextBlock Text="@browser" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+      </Button>
+
+      <Button Classes="chip" Command="{Binding InsertTagCommand}" CommandParameter="@coding" ToolTip.Tip="Dispatch a JCode specialist coding session with workspace confinement" Margin="0,0,6,4">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Path Classes="icon small accent" Data="{StaticResource IconCode}" Width="11" Height="11" />
+          <TextBlock Text="@coding" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+      </Button>
+
+      <Button Classes="chip" Command="{Binding InsertTagCommand}" CommandParameter="@docling" ToolTip.Tip="Ingest and parse structured documents (PDF, DOCX, Tables) into Markdown" Margin="0,0,6,4">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Path Classes="icon small accent" Data="{StaticResource IconFile}" Width="11" Height="11" />
+          <TextBlock Text="@docling" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+      </Button>
+
+      <Button Classes="chip" Command="{Binding InsertTagCommand}" CommandParameter="@langgraph" ToolTip.Tip="Execute a multi-agent coordination graph with SQLite state checkpoints" Margin="0,0,6,4">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Path Classes="icon small accent" Data="{StaticResource IconBolt}" Width="11" Height="11" />
+          <TextBlock Text="@langgraph" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+      </Button>
+
+      <Button Classes="chip" Command="{Binding InsertTagCommand}" CommandParameter="/audit" ToolTip.Tip="Query the Citadel append-only cryptographic audit ledger" Margin="0,0,6,4">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Path Classes="icon small accent" Data="{StaticResource IconShield}" Width="11" Height="11" />
+          <TextBlock Text="/audit" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+      </Button>
+
+      <Button Classes="chip" Command="{Binding InsertTagCommand}" CommandParameter="/approve" ToolTip.Tip="Review pending Human-in-the-Loop authorization gates" Margin="0,0,6,4">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Path Classes="icon small accent" Data="{StaticResource IconCheck}" Width="11" Height="11" />
+          <TextBlock Text="/approve" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+      </Button>
+    </WrapPanel>
+
+    <!-- ============================================================
+         Composer - iridescent rim, Antigravity signature
+         ============================================================ -->
+    <Border Grid.Row="3"
+            Margin="0,6,0,0"
+            CornerRadius="26"
+            Background="Transparent"
+            BoxShadow="0 0 46 0 #3D7EB0F5, 0 0 84 0 #33F2A6C6">
+
+      <Border Padding="1.8" CornerRadius="26" Background="{DynamicResource ComposerGradient}">
+        <Grid RowDefinitions="Auto,Auto">
+
+          <!-- Input + primary actions -->
+          <Border Grid.Row="0"
+                  CornerRadius="24.6,24.6,0,0"
+                  Background="{DynamicResource SurfaceCard}"
+                  Padding="18,15,14,10">
+            <Grid RowDefinitions="Auto,Auto">
+
+              <TextBox Classes="seamless"
+                       Text="{Binding PromptText}"
+                       AcceptsReturn="True"
+                       TextWrapping="Wrap"
+                       MinHeight="50"
+                       MaxHeight="150"
+                       Watermark="Ask anything, @ to mention, / for actions" />
+
+              <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,8,0,0">
+
+                <Border Classes="chip">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Path Classes="icon accent" Data="{StaticResource IconSpark}" Width="12" Height="12" />
+                    <TextBlock Text="{Binding SelectedMode}"
+                               FontSize="11.5"
+                               Foreground="{DynamicResource TextSecondary}"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+
+                <ProgressBar Grid.Column="1"
+                             IsIndeterminate="True"
+                             IsVisible="{Binding IsExecuting}"
+                             Width="90"
+                             Height="3"
+                             Margin="14,0"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding CooldownButtonText}"
+                             IsVisible="{Binding IsCooldownActive}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextTertiary}"
+                             VerticalAlignment="Center" />
+                  <Button Classes="send"
+                          Command="{Binding ExecuteAgentCommand}"
+                          IsEnabled="{Binding !IsCooldownActive}"
+                          ToolTip.Tip="Run agent">
+                    <Path Classes="icon onaccent" Data="{StaticResource IconArrowUp}" Width="14" Height="14" />
+                  </Button>
+                </StackPanel>
+
+              </Grid>
+            </Grid>
+          </Border>
+
+          <!-- Secondary strip: run configuration -->
+          <Border Grid.Row="1"
+                  CornerRadius="0,0,24.6,24.6"
+                  Background="{DynamicResource SurfaceInset}"
+                  Padding="14,7">
+            <Grid ColumnDefinitions="*,Auto">
+
+              <WrapPanel Grid.Column="0" Orientation="Horizontal">
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
+                  <TextBlock Text="Mode"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextTertiary}"
+                             VerticalAlignment="Center"
+                             Margin="0,0,2,0" />
+                  <ComboBox Classes="bare"
+                            ItemsSource="{Binding AvailableModes}"
+                            SelectedItem="{Binding SelectedMode}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{ReflectionBinding Converter={x:Static conv:HumanizeConverter.Instance}}"
+                                   FontSize="11.5" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
+                  <TextBlock Text="Action"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextTertiary}"
+                             VerticalAlignment="Center"
+                             Margin="0,0,2,0" />
+                  <ComboBox Classes="bare"
+                            ItemsSource="{Binding AvailableWorkflows}"
+                            SelectedItem="{Binding SelectedWorkflow}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{ReflectionBinding Converter={x:Static conv:HumanizeConverter.Instance}}"
+                                   FontSize="11.5" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                  <TextBlock Text="Effort"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextTertiary}"
+                             VerticalAlignment="Center"
+                             Margin="0,0,2,0" />
+                  <ComboBox Classes="bare"
+                            ItemsSource="{Binding AvailableComplexities}"
+                            SelectedItem="{Binding SelectedComplexity}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{ReflectionBinding Converter={x:Static conv:HumanizeConverter.Instance}}"
+                                   FontSize="11.5" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                </StackPanel>
+
+              </WrapPanel>
+
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+
+                <TextBox Text="{Binding LicenseKey}"
+                         IsVisible="{Binding !IsByokVisible}"
+                         Watermark="License key"
+                         Width="150"
+                         Height="26"
+                         MinHeight="26"
+                         Padding="9,2"
+                         FontSize="11"
+                         CornerRadius="8" />
+
+                <TextBox Text="{Binding ByokKey}"
+                         IsVisible="{Binding IsByokVisible}"
+                         PasswordChar="*"
+                         Watermark="OpenRouter key"
+                         Width="150"
+                         Height="26"
+                         MinHeight="26"
+                         Padding="9,2"
+                         FontSize="11"
+                         CornerRadius="8" />
+
+              </StackPanel>
+            </Grid>
+          </Border>
+
+        </Grid>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

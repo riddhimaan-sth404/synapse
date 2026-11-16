@@ -1,0 +1,21 @@
+{
+  "platform": "linux",
+  "isolation_mode": "landlock_namespaces",
+  "limits": {
+    "max_memory_bytes": 2147483648,
+    "cpu_shares": 1024,
+    "max_pids": 64,
+    "allow_network": false
+  },
+  "filesystem": {
+    "read_only_paths": ["${WORKSPACE_ROOT}"],
+    "denied_paths": [
+      "~/.ssh",
+      "~/.aws",
+      "~/.synapse",
+      "~/.mutexflow",
+      "/etc/shadow",
+      "/etc/sudoers"
+    ]
+  }
+}

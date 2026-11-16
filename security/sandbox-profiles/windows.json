@@ -1,0 +1,21 @@
+{
+  "platform": "windows",
+  "isolation_mode": "job_object",
+  "limits": {
+    "max_memory_bytes": 2147483648,
+    "cpu_rate_percentage": 50,
+    "active_process_limit": 16,
+    "allow_network": false,
+    "allow_clipboard": false
+  },
+  "filesystem": {
+    "read_only_paths": ["${WORKSPACE_ROOT}"],
+    "denied_paths": [
+      "${USERPROFILE}\\.ssh",
+      "${USERPROFILE}\\.aws",
+      "${USERPROFILE}\\.synapse",
+      "${USERPROFILE}\\.mutexflow",
+      "${WINDIR}\\System32"
+    ]
+  }
+}

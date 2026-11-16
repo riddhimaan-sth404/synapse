@@ -1,0 +1,4 @@
+version: v2
+plugins:
+  - remote: buf.build/prost/plugins/prost:v0.4.0
+    out: ../core/synapse-core/src/proto

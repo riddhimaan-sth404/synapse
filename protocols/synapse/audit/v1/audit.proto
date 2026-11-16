@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package synapse.audit.v1;
+
+option csharp_namespace = "Synapse.Protocols.Audit.V1";
+option go_package = "github.com/riddhimaan-sth404/synapse/protocols/gen/go/audit/v1;auditv1";
+
+import "synapse/common/v1/common.proto";
+
+message AuditRecord {
+  uint64 index = 1;
+  string timestamp = 2;
+  string session_id = 3;
+  string actor = 4;
+  string event_type = 5;
+  string payload_json = 6;
+  string previous_hash = 7;
+  string record_hash = 8;
+}
+
+message RecordAuditRequest {
+  string session_id = 1;
+  string actor = 2;
+  string event_type = 3;
+  string payload_json = 4;
+}
+
+message RecordAuditResponse {
+  bool committed = 1;
+  uint64 index = 2;
+  string record_hash = 3;
+}

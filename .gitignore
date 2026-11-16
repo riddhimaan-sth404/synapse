@@ -1,0 +1,84 @@
+# Synapse Comprehensive Git Ignore Policy
+
+# Environments & Secret Credentials
+.env
+.env.*
+!.env.example
+*.token
+*.pem
+*.key
+*.pfx
+
+# Rust Build Artifacts
+target/
+**/target/
+*.rs.bk
+
+# Node.js, Vite & Frontend Bundles
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+.npm/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Tauri Generated Artifacts
+**/src-tauri/target/
+**/src-tauri/gen/schemas/
+
+# .NET, C# & Avalonia Build Artifacts
+bin/
+obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+*.userprefs
+*.pidb
+*.booproj
+
+# Python Runtime & Worker Virtual Environments
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local State, Database WALs & Session Cache
+.synapse/
+.mutexflow/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.dat
+*.log
+
+# Large Binary AI Model Weights
+*.gguf
+*.bin
+models/*.gguf
+models/*.bin
+
+# Operating System & Editor Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+[Tt]emp/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+*.docx

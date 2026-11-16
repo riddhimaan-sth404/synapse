@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package synapse.common.v1;
+
+option csharp_namespace = "Synapse.Protocols.Common.V1";
+option go_package = "github.com/riddhimaan-sth404/synapse/protocols/gen/go/common/v1;commonv1";
+
+message UUID {
+  string value = 1;
+}
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message ErrorStatus {
+  int32 code = 1;
+  string message = 2;
+  map<string, string> metadata = 3;
+}
+
+message PaginationRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message PaginationResponse {
+  string next_page_token = 1;
+  int64 total_count = 2;
+}

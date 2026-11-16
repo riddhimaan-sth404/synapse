@@ -1,0 +1,251 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Synapse.Desktop.ViewModels"
+             x:Class="Synapse.Desktop.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="36,12,36,36" MaxWidth="780" Spacing="22">
+
+      <!-- ============================================================
+           Header
+           ============================================================ -->
+      <StackPanel Spacing="5">
+        <TextBlock Classes="h1" Text="General" />
+        <TextBlock Classes="sub"
+                   Text="Configure agent execution, queued message delivery, and permissions." />
+      </StackPanel>
+
+      <!-- ============================================================
+           Interface Layout (Knowledge Work vs Software Engineering)
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Interface Layout" />
+
+        <Grid ColumnDefinitions="*,*">
+
+          <!-- Knowledge Work Card -->
+          <Button Grid.Column="0"
+                  Classes="card-select"
+                  Classes.selected="{Binding IsKnowledgeWork}"
+                  Command="{Binding SelectKnowledgeWorkCommand}"
+                  Margin="0,0,8,0">
+            <StackPanel Spacing="10">
+              <Border Width="34" Height="34" CornerRadius="8" Background="{DynamicResource SurfaceInset}" HorizontalAlignment="Left">
+                <Path Classes="icon" Data="{StaticResource IconFolder}" Width="16" Height="16" />
+              </Border>
+              <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="Knowledge Work" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                  <Ellipse Grid.Column="1" Classes="dot ok" IsVisible="{Binding IsKnowledgeWork}" VerticalAlignment="Center" />
+                </Grid>
+                <TextBlock Text="Simplified interface for research, writing, and everyday tasks."
+                           FontSize="11.5"
+                           Foreground="{DynamicResource TextTertiary}"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </StackPanel>
+          </Button>
+
+          <!-- Software Engineering Card -->
+          <Button Grid.Column="1"
+                  Classes="card-select"
+                  Classes.selected="{Binding IsSoftwareEngineering}"
+                  Command="{Binding SelectSoftwareEngineeringCommand}"
+                  Margin="8,0,0,0">
+            <StackPanel Spacing="10">
+              <Border Width="34" Height="34" CornerRadius="8" Background="{DynamicResource AccentSoft}" HorizontalAlignment="Left">
+                <Path Classes="icon accent" Data="{StaticResource IconCode}" Width="16" Height="16" />
+              </Border>
+              <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="Software Engineering" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                  <Ellipse Grid.Column="1" Classes="dot ok" IsVisible="{Binding IsSoftwareEngineering}" VerticalAlignment="Center" />
+                </Grid>
+                <TextBlock Text="Full interface for coding, developer tools, and managing agents."
+                           FontSize="11.5"
+                           Foreground="{DynamicResource TextTertiary}"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </StackPanel>
+          </Button>
+
+        </Grid>
+      </StackPanel>
+
+      <!-- ============================================================
+           Global Permissions
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <StackPanel Spacing="3">
+          <TextBlock Classes="h2" Text="Global Permissions" />
+          <TextBlock Classes="sub" Text="Configure global allowed and denied resource permissions." />
+        </StackPanel>
+
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="14">
+
+            <!-- Permission Preset -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Permission Preset" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Controls the actions the agent can take." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+
+              <ComboBox Grid.Column="1"
+                        ItemsSource="{Binding AvailablePermissionPresets}"
+                        SelectedItem="{Binding PermissionPreset}"
+                        Width="130"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <Border Classes="hairline" />
+
+            <!-- Tool Permissions -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Tool Permissions" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Modify permissions for file, terminal, and MCP tools." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+
+              <Button Grid.Column="1" Classes="secondary" Content="Open" Padding="18,5" VerticalAlignment="Center" />
+            </Grid>
+
+            <Border Classes="hairline" />
+
+            <!-- Network Access Rules -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Network Access Rules" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Configure allowed and denied URLs for reading." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+
+              <Button Grid.Column="1" Classes="secondary" Content="Open" Padding="18,5" VerticalAlignment="Center" />
+            </Grid>
+
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- ============================================================
+           Execution
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Execution" />
+
+        <Border Classes="card" Padding="18">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="Queued Messages" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+              <TextBlock Text="Configure when follow-up messages are sent." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+            </StackPanel>
+
+            <Border Grid.Column="1" Classes="inset" Padding="3" CornerRadius="8" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="2">
+                <Button Classes="ghost" Content="Queue" Padding="12,4" FontSize="11.5" />
+                <Border Classes="badge ok" Padding="12,4" CornerRadius="6">
+                  <TextBlock Text="Send Immediately" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource Success}" />
+                </Border>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <!-- ============================================================
+           Voice Mode
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Voice mode" />
+
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="14">
+
+            <!-- Voice Selection -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Voice" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="The voice used in Voice mode. Powered by Gemini Live." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="{Binding VoiceName}" FontSize="12" Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" />
+                <Button Classes="secondary" Content="Change" Padding="14,5" />
+              </StackPanel>
+            </Grid>
+
+            <Border Classes="hairline" />
+
+            <!-- Microphone Selection -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Microphone" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Input device for voice mode and dictation." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+
+              <ComboBox Grid.Column="1"
+                        ItemsSource="{Binding AvailablePermissionPresets}"
+                        SelectedItem="{Binding MicrophoneName}"
+                        Width="160"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <Border Classes="hairline" />
+
+            <!-- Volume Slider -->
+            <Grid ColumnDefinitions="*,180">
+              <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Volume" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="How loud Synapse's voice is." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Slider Minimum="0" Maximum="100" Value="{Binding VoiceVolume}" Width="130" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding VoiceVolume, StringFormat='{}{0:0}%'}" FontSize="11.5" Classes="mono" VerticalAlignment="Center" />
+              </StackPanel>
+            </Grid>
+
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- ============================================================
+           Backend & Security Control Plane
+           ============================================================ -->
+      <StackPanel Spacing="10">
+        <TextBlock Classes="h2" Text="Core Backend &amp; Node Identity" />
+
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="14">
+
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2">
+                <TextBlock Text="Server loopback URL" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Synapse Core backend loopback endpoint (port 3001)." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+              <TextBox Grid.Column="1" Text="{Binding BackendUrl}" Width="200" VerticalAlignment="Center" />
+            </Grid>
+
+            <Border Classes="hairline" />
+
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2">
+                <TextBlock Text="Hardware Machine ID" FontSize="12.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" />
+                <TextBlock Text="Cryptographically bound node fingerprint used for local security." FontSize="11" Foreground="{DynamicResource TextTertiary}" />
+              </StackPanel>
+              <TextBox Grid.Column="1" Text="{Binding MachineId}" IsReadOnly="True" Classes="mono" Width="200" VerticalAlignment="Center" />
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+              <Button Classes="primary" Command="{Binding SaveSettingsCommand}" Content="Save settings" />
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource Success}" VerticalAlignment="Center" FontSize="12" />
+            </StackPanel>
+
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>
